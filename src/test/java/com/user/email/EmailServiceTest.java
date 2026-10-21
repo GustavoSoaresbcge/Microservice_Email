@@ -25,7 +25,7 @@ import com.user.email.repositories.EmailRepository;
 import com.user.email.services.EmailService;
 
 @ExtendWith(MockitoExtension.class)
-class EmailApplicationTests {
+class EmailServiceTest {
 
     @Mock
     private EmailRepository emailRepository;
