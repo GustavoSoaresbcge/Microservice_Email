@@ -22,7 +22,7 @@ flowchart LR
 1. O consumidor lê a mensagem da fila `default.email`.
 2. O serviço tenta enviar o e-mail e grava o resultado no banco (`SENT` ou `ERROR`).
 3. Se o envio falhar, a exceção é **relançada de propósito** para que o retry do Spring AMQP entre em ação.
-4. Depois de **3 tentativas** (com espera crescente, começando em 2 s e dobrando a cada tentativa), a mensagem vai para a fila `email.dlq` por meio da Dead Letter Exchange `email.dlx`.
+4. Se falhar, o envio é repetido **3 vezes** (4 tentativas no total), com espera crescente de **2 s, 4 s e 8 s** entre elas. Esgotadas as tentativas, a mensagem vai para a fila `email.dlq` por meio da Dead Letter Exchange `email.dlx`.
 
 ## Endpoint
 
@@ -54,14 +54,12 @@ As informações sensíveis vêm de **variáveis de ambiente**, e não do códig
 | Variável | O que é |
 |---|---|
 | `DB_PASSWORD_EMAIL` | Senha do PostgreSQL |
-| `RABBITMQ_ADDRESSES_EMAIL` | Endereço do RabbitMQ (ex.: `amqp://guest:guest@localhost:5672`) |
 | `MAIL_USERNAME` | Conta Gmail que envia os e-mails |
 | `MAIL_PASSWORD` | Senha de app do Gmail (não é a senha normal da conta) |
 
 ```bash
 # Linux / macOS
 export DB_PASSWORD_EMAIL=minha_senha
-export RABBITMQ_ADDRESSES_EMAIL=amqp://guest:guest@localhost:5672
 export MAIL_USERNAME=seu_email@gmail.com
 export MAIL_PASSWORD=sua_senha_de_app
 mvn spring-boot:run
